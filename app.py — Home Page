@@ -1,0 +1,136 @@
+import streamlit as st
+
+st.set_page_config(page_title="Analytics Auditor", page_icon="🔍", layout="wide")
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+html, body, [class*="css"], .stApp, .stApp > div,
+div[data-testid="stAppViewContainer"], div[data-testid="stAppViewBlockContainer"],
+div[data-testid="block-container"], div[data-testid="stVerticalBlock"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #1d1d1f !important;
+    background-color: #f5f5f7 !important;
+}
+.main, .stApp { background-color: #f5f5f7 !important; }
+.block-container { padding: 2rem 2rem 4rem; max-width: 980px; background: #f5f5f7 !important; }
+section[data-testid="stSidebar"] { background: #fff !important; border-right: 1px solid rgba(0,0,0,0.06); }
+section[data-testid="stSidebar"] * { color: #1d1d1f !important; }
+.tool-card { background: #fff; border-radius: 18px; padding: 28px 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 16px; cursor: pointer; transition: box-shadow .2s; }
+.tool-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+.tool-icon { font-size: 32px; margin-bottom: 14px; }
+.tool-title { font-size: 18px; font-weight: 600; color: #1d1d1f; letter-spacing: -.02em; margin-bottom: 6px; }
+.tool-desc { font-size: 14px; color: #6e6e73; font-weight: 300; line-height: 1.6; }
+.tool-tag { display: inline-block; background: #f0f6ff; color: #0071e3; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 980px; margin-top: 12px; }
+.stButton > button { background: #0071e3 !important; color: white !important; border: none !important; border-radius: 980px !important; padding: 12px 28px !important; font-size: 15px !important; font-weight: 400 !important; font-family: Inter, sans-serif !important; }
+.stButton > button:hover { background: #0077ed !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# ── Sidebar ──
+with st.sidebar:
+    st.markdown("""
+    <div style="padding:8px 0 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:7px;height:7px;background:#0071e3;border-radius:50%"></div>
+            <span style="font-size:13px;font-weight:600;color:#1d1d1f">Analytics Auditor</span>
+        </div>
+        <div style="font-size:11px;color:#86868b;font-weight:300">All-in-one analytics audit tool</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    saved_key = st.secrets.get("GROQ_API_KEY", "") if hasattr(st, "secrets") else ""
+    if not saved_key:
+        api_key = st.text_input("Groq API Key", type="password", placeholder="gsk_...", key="home_key")
+        if api_key:
+            st.session_state["groq_key"] = api_key
+        st.markdown('<div style="font-size:11px;color:#86868b;margin-top:2px">Free at <a href="https://console.groq.com" target="_blank" style="color:#0071e3">console.groq.com</a></div>', unsafe_allow_html=True)
+    else:
+        st.session_state["groq_key"] = saved_key
+        st.markdown('<div style="font-size:11px;color:#34c759;margin-top:2px">✓ API key loaded</div>', unsafe_allow_html=True)
+
+# ── Hero ──
+st.markdown("""
+<div style="text-align:center;padding:60px 0 48px">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:980px;padding:7px 18px;box-shadow:0 2px 12px rgba(0,0,0,0.07);font-size:12px;font-weight:500;color:#6e6e73;margin-bottom:28px">
+        <div style="width:7px;height:7px;background:#0071e3;border-radius:50%"></div>
+        Analytics Auditor
+    </div>
+    <div style="font-size:3.2rem;font-weight:600;letter-spacing:-.04em;color:#1d1d1f;line-height:1.1;margin-bottom:16px">
+        The complete analytics<br><span style="color:#0071e3">audit toolkit</span>
+    </div>
+    <div style="font-size:17px;color:#6e6e73;font-weight:300;max-width:520px;margin:0 auto;line-height:1.6">
+        Paste any website URL and get a full picture of their tech stack, GTM setup, and GA4 implementation in seconds.
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Tool cards ──
+c1, c2, c3 = st.columns(3)
+
+with c1:
+    st.markdown("""
+    <div class="tool-card">
+        <div class="tool-icon">🔎</div>
+        <div class="tool-title">Tech Stack</div>
+        <div class="tool-desc">Detect every technology running on any website. Analytics tools, ecommerce platforms, marketing automation, payment processors and more.</div>
+        <span class="tool-tag">Real page source</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Open Tech Stack →", key="btn_tech"):
+        st.switch_page("pages/1_Tech_Stack.py")
+
+with c2:
+    st.markdown("""
+    <div class="tool-card">
+        <div class="tool-icon">🏷️</div>
+        <div class="tool-title">GTM Audit</div>
+        <div class="tool-desc">Full Google Tag Manager audit. Detects the container, parses real tags and triggers, flags issues and gives prioritised recommendations.</div>
+        <span class="tool-tag">No GTM access needed</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Open GTM Audit →", key="btn_gtm"):
+        st.switch_page("pages/2_GTM_Audit.py")
+
+with c3:
+    st.markdown("""
+    <div class="tool-card">
+        <div class="tool-icon">📊</div>
+        <div class="tool-title">GA4 Audit</div>
+        <div class="tool-desc">Deep-dive into GA4 implementation. Scorecard with events, conversions, ecommerce tracking, consent mode and prioritised fixes.</div>
+        <span class="tool-tag">From page source</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Open GA4 Audit →", key="btn_ga4"):
+        st.switch_page("pages/3_GA4_Audit.py")
+
+# ── How it works ──
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("""
+<div style="background:#fff;border-radius:18px;padding:32px;box-shadow:0 2px 12px rgba(0,0,0,0.06)">
+    <div style="font-size:11px;font-weight:600;color:#86868b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px">How it works</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px">
+        <div>
+            <div style="font-size:22px;margin-bottom:8px">1️⃣</div>
+            <div style="font-size:13px;font-weight:500;color:#1d1d1f;margin-bottom:4px">Paste a URL</div>
+            <div style="font-size:12px;color:#6e6e73;font-weight:300;line-height:1.6">Any website URL. No login or account access needed.</div>
+        </div>
+        <div>
+            <div style="font-size:22px;margin-bottom:8px">2️⃣</div>
+            <div style="font-size:13px;font-weight:500;color:#1d1d1f;margin-bottom:4px">Real page fetch</div>
+            <div style="font-size:12px;color:#6e6e73;font-weight:300;line-height:1.6">Fetches the actual page source and extracts script URLs, inline JS and meta tags.</div>
+        </div>
+        <div>
+            <div style="font-size:22px;margin-bottom:8px">3️⃣</div>
+            <div style="font-size:13px;font-weight:500;color:#1d1d1f;margin-bottom:4px">AI analysis</div>
+            <div style="font-size:12px;color:#6e6e73;font-weight:300;line-height:1.6">Groq AI fingerprints the signals and identifies all technologies and implementation details.</div>
+        </div>
+        <div>
+            <div style="font-size:22px;margin-bottom:8px">4️⃣</div>
+            <div style="font-size:13px;font-weight:500;color:#1d1d1f;margin-bottom:4px">Audit report</div>
+            <div style="font-size:12px;color:#6e6e73;font-weight:300;line-height:1.6">Get a full report with scorecard, issues and prioritised recommendations.</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
